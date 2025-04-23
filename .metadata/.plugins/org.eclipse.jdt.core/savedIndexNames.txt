@@ -1,0 +1,20 @@
+INDEX VERSION 1.132+/home/matisse/eclipse-workspace/rss25SB/.metadata/.plugins/org.eclipse.jdt.core
+1865797976.index
+89567196.index
+4182486596.index
+1922620022.index
+2553728880.index
+2949097923.index
+4198247475.index
+877330365.index
+1272061093.index
+76934233.index
+4236255732.index
+1356131526.index
+890877892.index
+312817359.index
+3689772550.index
+919525095.index
+1886933749.index
+92873497.index
+2992234919.index
