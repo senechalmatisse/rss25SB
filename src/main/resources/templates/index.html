@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::title}, ~{::section})">
+    <head>
+        <title>Accueil</title>
+    </head>
+    <body>
+        <section class="container">
+            <!-- Logo de l'université -->
+            <img th:src="@{/logo_univ_rouen.png}" alt="Logo Université de Rouen" width="200"/>
+
+            <h1>Projet RSS25SB</h1>
+
+            <p th:text="'Version : ' + ${project.version}"></p>
+            <p th:text="'Développeur : ' + ${project.developer}"></p>
+        </section>
+    </body>
+</html>

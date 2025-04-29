@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org"
+      th:fragment="layout(title, content)">
+    <head>
+        <meta charset="UTF-8">
+        <title th:replace="${title}">Titre par défaut</title>
+
+        <!-- Style général -->
+        <link rel="stylesheet" th:href="@{/css/style.css}" />
+    </head>
+    <body>
+        <header>
+            <h1>Projet RSS25SB</h1>
+        </header>
+
+        <main>
+            <div th:replace="${content}">Contenu par défaut</div>
+        </main>
+    </body>
+</html>
