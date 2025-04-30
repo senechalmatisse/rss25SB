@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+.env
+src/main/java/fr/univrouen/rss25SB/config/

@@ -1,8 +1,12 @@
 package fr.univrouen.rss25SB.controllers;
 
-import fr.univrouen.rss25SB.dto.*;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.ModelAndView;
+
+import fr.univrouen.rss25SB.dto.ItemListDTO;
 import fr.univrouen.rss25SB.service.ItemService;
-import org.springframework.web.bind.annotation.*;
 
 /**
  * Contrôleur REST pour la gestion des articles RSS.
@@ -11,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
  * une liste résumée des articles RSS stockés dans la base de données, 
  * au format XML valide (XSD conforme).
  * 
- * @author Matisse SEENCHAL
+ * @author Matisse SENECHAL
  * @version 1.0
  */
 @RestController
@@ -41,4 +45,12 @@ public class ItemController {
     public ItemListDTO getAllItems() {
         return itemService.getAllItems();
     }
+
+    @GetMapping(value = "/rss25SB/resume/html", produces = "text/html")
+    public ModelAndView getAllItemsAsHtml(Model model) {
+        ItemListDTO itemList = itemService.getAllItems();
+        ModelAndView modelAndView = new ModelAndView("items");
+        modelAndView.addObject("items", itemList.getItems());
+        return modelAndView;
+    }    
 }
