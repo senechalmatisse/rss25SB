@@ -23,9 +23,9 @@ public class ProjectInfoService {
      */
     public ProjectInfo getProjectInfo() {
         return new ProjectInfo(
-            "rss25SB",                      // Nom du projet
-            "1.0",                          // Version du projet
-            "Matisse Senechal",             // Nom du développeur
+            "rss25SB",                          // Nom du projet
+            "1.0",                           // Version du projet
+            "Matisse Senechal",            // Nom du développeur
             "/logo_univ_rouen.png"          // Chemin relatif du logo
         );
     }

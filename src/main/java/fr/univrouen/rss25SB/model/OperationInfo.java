@@ -1,5 +1,7 @@
 package fr.univrouen.rss25SB.model;
 
+import lombok.*;
+
 /**
  * Modèle représentant une opération REST disponible sur l'API RSS25SB.
  * <p>
@@ -14,6 +16,8 @@ package fr.univrouen.rss25SB.model;
  * @author Matisse SENECHAL
  * @version 1.0
  */
+@Getter
+@AllArgsConstructor
 public class OperationInfo {
 
     /** URL relative de l'opération REST. */
@@ -24,44 +28,4 @@ public class OperationInfo {
 
     /** Description de l'objectif ou du comportement de l'opération. */
     private String description;
-
-    /**
-     * Constructeur de l'objet {@code OperationInfo}.
-     *
-     * @param url         URL de l'opération
-     * @param method      méthode HTTP utilisée
-     * @param description description de l'opération
-     */
-    public OperationInfo(String url, String method, String description) {
-        this.url = url;
-        this.method = method;
-        this.description = description;
-    }
-
-    /**
-     * Retourne l'URL de l'opération.
-     *
-     * @return URL sous forme de chaîne de caractères
-     */
-    public String getUrl() {
-        return url;
-    }
-
-    /**
-     * Retourne la méthode HTTP de l'opération.
-     *
-     * @return méthode HTTP utilisée
-     */
-    public String getMethod() {
-        return method;
-    }
-
-    /**
-     * Retourne la description de l'opération.
-     *
-     * @return description textuelle de l'opération
-     */
-    public String getDescription() {
-        return description;
-    }
 }

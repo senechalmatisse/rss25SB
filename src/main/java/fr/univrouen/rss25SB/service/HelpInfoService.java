@@ -30,10 +30,10 @@ public class HelpInfoService {
         operations.add(new OperationInfo("/help", "GET", "Affiche cette page d'aide"));
         operations.add(new OperationInfo("/rss25SB/resume/xml", "GET", "Affiche la liste des articles au format XML"));
         operations.add(new OperationInfo("/rss25SB/resume/html", "GET", "Affiche la liste des articles au format HTML"));
-        operations.add(new OperationInfo("/rss25SB/resume/xml/{id}", "GET", "Affiche un article précis au format XML"));
-        operations.add(new OperationInfo("/rss25SB/html/{id}", "GET", "Affiche un article précis au format HTML"));
+        operations.add(new OperationInfo("/rss25SB/resume/xml/id", "GET", "Affiche un article précis au format XML"));
+        operations.add(new OperationInfo("/rss25SB/html/id", "GET", "Affiche un article précis au format HTML"));
         operations.add(new OperationInfo("/rss25SB/insert", "POST", "Ajoute un nouvel article (XML validé par XSD)"));
-        operations.add(new OperationInfo("/rss25SB/delete/{id}", "DELETE", "Supprime un article par son identifiant"));
+        operations.add(new OperationInfo("/rss25SB/delete/id", "DELETE", "Supprime un article par son identifiant"));
 
         return operations;
     }
