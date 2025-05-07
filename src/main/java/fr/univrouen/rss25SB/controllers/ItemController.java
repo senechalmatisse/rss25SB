@@ -2,6 +2,7 @@ package fr.univrouen.rss25SB.controllers;
 
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -52,5 +53,10 @@ public class ItemController {
         ModelAndView modelAndView = new ModelAndView("items");
         modelAndView.addObject("items", itemList.getItems());
         return modelAndView;
-    }    
+    }
+
+    @GetMapping(value = "/rss25SB/resume/xml/{id}", produces = "application/xml")
+    public Object getItemById(@PathVariable int id) {
+        return itemService.getItemById(id);
+    }
 }

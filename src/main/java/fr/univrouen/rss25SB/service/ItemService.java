@@ -8,7 +8,7 @@ import fr.univrouen.rss25SB.utils.ItemValidator;
 import org.springframework.stereotype.Service;
 
 import java.time.format.DateTimeFormatter;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -56,6 +56,15 @@ public class ItemService {
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());
         return new ItemListDTO(items);
+    }
+
+    public Object getItemById(int id) {
+        Optional<Item> optionalItem = itemRepository.findById(id);
+        if (optionalItem.isPresent()) {
+            return convertToDTO(optionalItem.get());
+        } else {
+            return new ErrorDTO(id, "ERROR");
+        }
     }
 
     /**
