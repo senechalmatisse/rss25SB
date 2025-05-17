@@ -1,28 +1,30 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
+<html xmlns:th="http://www.thymeleaf.org" lang="fr"
       th:replace="layout :: layout(~{::title}, ~{::section})">
 <head>
     <title>Résumé des articles</title>
 </head>
-<body>
-    <section>
-        <h2>Liste des articles</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Date</th>
-                    <th>GUID</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="item : ${items}">
-                    <td th:text="${item.id}">1</td>
-                    <td th:text="${item.date}">2025-04-30T12:00:00+02:00</td>
-                    <td><a th:href="${item.guid}" th:text="${item.guid}" target="_blank">GUID</a></td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
-</body>
+<section>
+    <h2>Résumé des articles </h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>GUID</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${items}">
+                <td th:text="${item.id}"></td>
+                <td th:text="${item.title}"></td>
+                <td>
+                    <a th:href="${item.guid}" th:text="${item.guid}" target="_blank"></a>
+                </td>
+                <td th:text="${item.date}"></td>
+            </tr>
+        </tbody>
+    </table>
+</section>
 </html>

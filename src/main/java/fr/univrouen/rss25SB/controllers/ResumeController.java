@@ -1,14 +1,19 @@
 package fr.univrouen.rss25SB.controllers;
 
+import fr.univrouen.rss25SB.dto.ItemSummaryDTO;
 import fr.univrouen.rss25SB.dto.ItemSummaryListDTO;
 import fr.univrouen.rss25SB.service.ItemService;
 
 import jakarta.xml.bind.*;
+import lombok.AllArgsConstructor;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * Controller REST permettant d’exposer un endpoint pour obtenir
@@ -27,6 +32,7 @@ import java.io.StringWriter;
  * @see fr.univrouen.rss25SB.dto.ItemSummaryDTO
  * @see fr.univrouen.rss25SB.service.ItemService
  */
+@AllArgsConstructor
 @RestController
 @RequestMapping("/rss25SB/resume")
 public class ResumeController {
@@ -34,14 +40,7 @@ public class ResumeController {
     /** Service métier permettant d'accéder aux articles résumés stockés en base. */
     private final ItemService itemService;
 
-    /**
-     * Constructeur injectant le service {@link ItemService}.
-     *
-     * @param itemService service métier pour accéder aux résumés d’articles
-     */
-    public ResumeController(ItemService itemService) {
-        this.itemService = itemService;
-    }
+    private final TemplateEngine templateEngine;
 
     /**
      * Endpoint GET exposant un flux XML contenant la liste synthétique des articles RSS.
@@ -55,7 +54,7 @@ public class ResumeController {
      * <p><b>MediaType :</b> application/xml</p>
      */
     @GetMapping(value = "/xml", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> getItemsAsXml() throws Exception {
+    public ResponseEntity<String> getItemsAsXML() throws Exception {
         ItemSummaryListDTO summaryList = new ItemSummaryListDTO(itemService.getAllItemSummaries());
 
         JAXBContext jaxbContext = JAXBContext.newInstance(ItemSummaryListDTO.class);
@@ -66,5 +65,22 @@ public class ResumeController {
         marshaller.marshal(summaryList, writer);
 
         return ResponseEntity.ok(writer.toString());
+    }
+
+    /**
+     * Affiche la liste synthétique des articles au format HTML.
+     * 
+     * @param model modèle Spring pour la vue
+     * @return nom de la vue Thymeleaf
+     */
+    @GetMapping(value = "/html", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<String> getItemsAsHTML() {
+        List<ItemSummaryDTO> items = itemService.getAllItemSummaries();
+
+        Context context = new Context();
+        context.setVariable("items", items);
+
+        String htmlContent = templateEngine.process("items", context);
+        return ResponseEntity.ok(htmlContent);
     }
 }

@@ -47,8 +47,8 @@ public class ItemService {
                 .map(entity -> new ItemSummaryDTO(
                         entity.getId(),
                         entity.getTitle(),
-                        DateTimeUtil.formatToRfc3339(entity.getPublished()),
-                        entity.getGuid()
+                        entity.getGuid(),
+                        DateTimeUtil.formatToRfc3339(entity.getPublished())
                 ))
                 .collect(Collectors.toList());
     }
