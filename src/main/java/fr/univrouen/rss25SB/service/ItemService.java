@@ -1,13 +1,14 @@
 package fr.univrouen.rss25SB.service;
 
 import fr.univrouen.rss25SB.dto.ItemSummaryDTO;
+import fr.univrouen.rss25SB.model.xml.Item;
 import fr.univrouen.rss25SB.repository.ItemRepository;
-import fr.univrouen.rss25SB.utils.DateTimeUtil;
+import fr.univrouen.rss25SB.utils.*;
 import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -51,5 +52,10 @@ public class ItemService {
                         DateTimeUtil.formatToRfc3339(entity.getPublished())
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<Item> getItemAsXmlById(Long id) {
+        return itemRepository.findById(id)
+            .map(itemEntity -> ItemMapper.toXml(itemEntity));
     }
 }
