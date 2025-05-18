@@ -1,6 +1,7 @@
 package fr.univrouen.rss25SB.service;
 
 import fr.univrouen.rss25SB.dto.ItemSummaryDTO;
+import fr.univrouen.rss25SB.model.db.ItemEntity;
 import fr.univrouen.rss25SB.model.xml.Item;
 import fr.univrouen.rss25SB.repository.ItemRepository;
 import fr.univrouen.rss25SB.utils.*;
@@ -57,5 +58,9 @@ public class ItemService {
     public Optional<Item> getItemAsXmlById(Long id) {
         return itemRepository.findById(id)
             .map(itemEntity -> ItemMapper.toXml(itemEntity));
+    }
+
+    public Optional<ItemEntity> getItemById(Long id) {
+        return itemRepository.findById(id);
     }
 }

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="fr"
+      th:replace="layout :: layout(~{::title}, ~{::section})">
+<head>
+    <meta charset="UTF-8">
+    <title>Détail de l'article</title>
+</head>
+<body>
+<section>
+    <h2>Détail de l’article</h2>
+
+    <div th:if="${error}">
+        <p style="color: red;"><strong>Erreur :</strong> Article [[${id}]] introuvable. Status = ERROR</p>
+    </div>
+
+    <div th:unless="${error}">
+        <p><strong>ID :</strong> [[${item.id}]]</p>
+        <p><strong>Title :</strong> [[${item.title}]]</p>
+        <p><strong>GUID :</strong> <a th:href="${item.guid}" th:text="${item.guid}" target="_blank"></a></p>
+        <p><strong>Publié :</strong> [[${item.published}]]</p>
+        <p th:if="${item.updated}">
+            <strong>Mise à jour :</strong> [[${item.updated}]]
+        </p>
+
+        <div th:if="${item.image}">
+            <p><strong>Image :</strong></p>
+            <img th:src="${item.image.href}" th:alt="${item.image.alt}" />
+        </div>
+
+        <div>
+            <p><strong>Catégories :</strong></p>
+            <ul>
+                <li th:each="cat : ${item.categories}" th:text="${cat.term}"></li>
+            </ul>
+        </div>
+
+        <div>
+            <p><strong>Contenu :</strong></p>
+            <p th:text="${item.content?.src}"></p>
+        </div>
+
+        <div th:if="${item.authors}">
+            <p><strong>Auteur(s) :</strong></p>
+            <ul>
+                <li th:each="a : ${item.authors}" th:text="${a.name + ' (' + a.email + ')'}"></li>
+            </ul>
+        </div>
+
+        <div th:if="${item.contributors}">
+            <p><strong>Contributeur(s) :</strong></p>
+            <ul>
+                <li th:each="c : ${item.contributors}" th:text="${c.name + ' (' + c.email + ')'}"></li>
+            </ul>
+        </div>
+    </div>
+</section>
+</body>
+</html>
