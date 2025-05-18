@@ -3,16 +3,13 @@ package fr.univrouen.rss25SB.controllers;
 import fr.univrouen.rss25SB.dto.*;
 import fr.univrouen.rss25SB.model.xml.Item;
 import fr.univrouen.rss25SB.service.ItemService;
-
+import fr.univrouen.rss25SB.utils.*;
 import jakarta.xml.bind.*;
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
 
-import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -39,37 +36,40 @@ public class ResumeController {
     /** Service métier permettant d'accéder aux articles résumés stockés en base. */
     private final ItemService itemService;
 
-    /** Moteur de template Thymeleaf utilisé pour générer la vue HTML des articles. */
-    private final TemplateEngine templateEngine;
+    /** Moteur de rendu HTML pour générer dynamiquement les vues (via Thymeleaf). */
+    private final HtmlRenderer htmlRenderer;
 
     /**
      * Endpoint GET exposant un flux XML contenant la liste synthétique des articles RSS.
-     * Chaque élément de la liste ne contient que l'identifiant, la date et le GUID.
+     * <p>
+     * Chaque article retourné contient uniquement trois champs : id, date, guid.
+     * </p>
      *
      * @return {@link ResponseEntity} contenant la représentation XML de la liste résumée
-     * @throws Exception en cas d’erreur lors de la sérialisation JAXB
+     * @throws JAXBException en cas d’erreur de sérialisation JAXB
      *
      * <p><b>URL :</b> <code>/rss25SB/resume/xml</code></p>
      * <p><b>Méthode :</b> GET</p>
      * <p><b>Produit :</b> application/xml</p>
      */
     @GetMapping(value = "/xml", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> getItemsAsXML() throws Exception {
-        ItemSummaryListDTO summaryList = new ItemSummaryListDTO(itemService.getAllItemSummaries());
+    public ResponseEntity<String> getItemsAsXML() throws JAXBException {
+        // Récupère la liste résumée des articles
+        ItemSummaryListDTO summaryList = new ItemSummaryListDTO(
+            itemService.getAllItemSummaries()
+        );
 
-        JAXBContext jaxbContext = JAXBContext.newInstance(ItemSummaryListDTO.class);
-        Marshaller marshaller = jaxbContext.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+        // Sérialisation XML avec JAXB via utilitaire
+        String xml = XmlUtil.marshal(summaryList);
 
-        StringWriter writer = new StringWriter();
-        marshaller.marshal(summaryList, writer);
-
-        return ResponseEntity.ok(writer.toString());
+        return ResponseEntity.ok(xml);
     }
 
     /**
      * Endpoint GET exposant la liste synthétique des articles RSS au format HTML.
-     * <p>Génère une vue Thymeleaf affichant les articles sous forme tabulaire ou autre mise en page HTML.</p>
+     * <p>
+     * Génère dynamiquement une page HTML (via un template "items") contenant tous les articles résumés.
+     * </p>
      *
      * @return {@link ResponseEntity} contenant le HTML rendu par le template {@code items.html}
      *
@@ -79,50 +79,46 @@ public class ResumeController {
      */
     @GetMapping(value = "/html", produces = MediaType.TEXT_HTML_VALUE)
     public ResponseEntity<String> getItemsAsHTML() {
+        // Récupération des articles résumés
         List<ItemSummaryDTO> items = itemService.getAllItemSummaries();
 
-        Context context = new Context();
-        context.setVariable("items", items);
+        // Rendu du HTML avec insertion des données dans le template "items"
+        String html = htmlRenderer.render(
+            "items",
+            Map.of("items", items)
+        );
 
-        String htmlContent = templateEngine.process("items", context);
-        return ResponseEntity.ok(htmlContent);
+        return ResponseEntity.ok(html);
     }
 
     /**
      * Endpoint GET permettant d’obtenir un article complet au format XML selon son identifiant.
      * <p>
-     * Si l’article est trouvé, un objet {@link Item} est retourné.
-     * Sinon, une réponse XML de type {@link XmlErrorResponseDTO} est générée.
+     * Si l’article est trouvé, un objet {@link Item} est retourné (sérialisé en XML).
+     * Sinon, une réponse XML de type {@link XmlErrorResponseDTO} est générée avec l’ID et un statut "ERROR".
      * </p>
      *
      * @param id identifiant de l’article à rechercher
-     * @return {@link ResponseEntity} contenant l’article au format XML ou un message d’erreur XML
-     * @throws Exception en cas d’erreur de sérialisation JAXB
+     * @return {@link ResponseEntity} contenant l’article au format XML ou une erreur
+     * @throws JAXBException en cas d’erreur lors de la sérialisation XML
      *
      * <p><b>URL :</b> <code>/rss25SB/resume/xml/{id}</code></p>
      * <p><b>Méthode :</b> GET</p>
      * <p><b>Produit :</b> application/xml</p>
      */
     @GetMapping(value = "/xml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
-    public ResponseEntity<String> getItemByIdAsXML(@PathVariable Long id) throws Exception {
+    public ResponseEntity<String> getItemByIdAsXML(@PathVariable Long id) throws JAXBException {
+        // Recherche de l’article par ID
         Optional<Item> itemOptional = itemService.getItemAsXmlById(id);
-    
-        JAXBContext context;
+
         Object toMarshal;
-    
-        if (itemOptional.isPresent()) {
-            context = JAXBContext.newInstance(Item.class);
+        if (itemOptional.isPresent()) {     // Si trouvé, on sérialise l’article  
             toMarshal = itemOptional.get();
-        } else {
-            context = JAXBContext.newInstance(XmlErrorResponseDTO.class);
+        } else {                            // sinon, une erreur XML
             toMarshal = new XmlErrorResponseDTO(id);
         }
-    
-        Marshaller marshaller = context.createMarshaller();
-        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-        StringWriter writer = new StringWriter();
-        marshaller.marshal(toMarshal, writer);
-    
-        return ResponseEntity.ok(writer.toString());
-    }    
+
+        String xml = XmlUtil.marshal(toMarshal);
+        return ResponseEntity.ok(xml);
+    }
 }

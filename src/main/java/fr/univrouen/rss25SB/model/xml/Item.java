@@ -26,7 +26,7 @@ import lombok.*;
  * </p>
  *
  * @author Matisse SENECHAL
- * @version 1.0
+ * @version 1.1
  */
 @Getter @Setter
 @XmlRootElement(name = "item", namespace = "http://univ.fr/rss25")

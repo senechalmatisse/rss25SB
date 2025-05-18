@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://univ.fr/rss25" xmlns="http://univ.fr/rss25" elementFormDefault="qualified" >
+	<xs:element name="feed">
+    	<xs:complexType>
+        	<xs:sequence>
+          	<xs:element name="title" type="Text128LengthType"/>
+				    <xs:element name="pubDate" type="RFC3339"/>
+            <xs:element name="copyright" type="Text128LengthType"/>
+        	  <xs:element name="link" minOccurs="1" maxOccurs="unbounded">
+              <xs:complexType>
+						    <xs:attribute name="rel" use="required">
+				          <xs:simpleType>
+				            <xs:restriction base="xs:string">
+				            <!-- Lien vers le fichier lui-même ou un autre document complémentaire -->
+				            <xs:pattern value="self|alternate"/>
+				            </xs:restriction>
+					        </xs:simpleType>
+					      </xs:attribute>
+						    <xs:attribute name="type" type="MIMEType" use="required"/>
+						    <xs:attribute name="href" type="RFC3987" use="required"/>
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="item" minOccurs="1" maxOccurs="10">
+              <xs:complexType>
+             	  <xs:sequence>
+      					  <xs:element name="guid" type="RFC4122"/>
+                 	<xs:element name="title" type="Text128LengthType"/>
+                  <xs:element name="category" minOccurs="1" maxOccurs="unbounded">
+                    <xs:complexType>
+                  	  <xs:attribute name="term" type="xs:string" use="required"/>
+                    </xs:complexType>
+                  </xs:element>
+                 	<!-- L'élément peut être "published" ou "updated" -->
+         					<xs:choice>
+         						<xs:element name="published" type="RFC3339"/>
+         						<xs:element name="updated" type="RFC3339"/>
+        					</xs:choice>
+  			        	<!-- Élément optionnel image -->
+                 	<xs:element name="image" minOccurs="0">
+                   	<xs:complexType>
+                     	<xs:attribute name="type" use="required">
+                    		<xs:simpleType>
+            							<xs:restriction base="xs:string">
+      											<xs:pattern value="image/(GIF|JPEG|JPG|BMP|PNG)"/>
+             							</xs:restriction>
+           							</xs:simpleType>
+                     	</xs:attribute>
+                     	<xs:attribute name="href" type="RFC3987" use="required"/>
+                    	<xs:attribute name="alt" type="xs:string" use="required"/>
+           						<xs:attribute name="length" type="xs:int"/>
+           					</xs:complexType>
+                	</xs:element>
+                 	<xs:element name="content" type="ContentType"/>
+        					<!-- Choix entre author et contributor -->
+  	    					<xs:choice minOccurs="1" maxOccurs="unbounded">
+        						<xs:element name="author">
+         							<xs:complexType>
+        								<xs:attribute name="name" use="required" type="Text64LengthType"/>
+    	      						<xs:attribute name="email" type="RFC6530"/>
+   					            <xs:attribute name="uri" type="RFC3987"/>
+		            			</xs:complexType>
+      	  					</xs:element>
+	      						<xs:element name="contributor">
+          						<xs:complexType>
+         								<xs:attribute name="name" use="required" type="Text64LengthType"/>
+	  	      						<xs:attribute name="email" type="RFC6530"/>
+  					            <xs:attribute name="uri" type="RFC3987"/>
+		           				</xs:complexType>
+         						</xs:element>
+        					</xs:choice>
+                </xs:sequence>
+    	        </xs:complexType>
+        	  </xs:element>
+	       	</xs:sequence>
+          <xs:attribute name="lang" use="required" type="LangueType"/>
+			    <xs:attribute name="version" use="required">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+            	  <xs:enumeration value="25"/>
+         			</xs:restriction>
+        		</xs:simpleType>
+	      	</xs:attribute>
+   		  </xs:complexType>
+	    </xs:element>
+	    
+	    
+    	<!-- Définition des types réutilisables -->
+      <xs:simpleType name="Text128LengthType">
+        <xs:restriction base="xs:string">
+       	<!-- Valider uniquement les lettres, chiffres, espaces, / et + -->
+          <xs:pattern value="[a-zA-Z0-9 +/]*"/>
+			    <xs:maxLength value = "128"/>
+		    </xs:restriction>
+      </xs:simpleType>
+    	<xs:simpleType name="Text64LengthType">
+        <xs:restriction base="xs:string">
+      		<xs:maxLength value = "64"/>
+    			<!-- Valider uniquement les lettres, chiffres, espaces, / et + -->
+        	<xs:pattern value="[a-zA-Z0-9 +/]*"/>
+    		</xs:restriction>
+      </xs:simpleType>
+     <xs:simpleType name="LangueType">
+        <xs:restriction base="xs:language">
+			<!-- Format langue : 2 ou 3 lettres ISO 639-1, code région : 2 lettres majuscules ou 3 chiffres -->
+        	<xs:pattern value="[a-z]{2,3}(-[A-Z]{2}|-\d{3})?"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+	<xs:complexType name="ContentType">
+		<xs:attribute name="type" use="required">
+    		<xs:simpleType>
+	        	<xs:restriction base="xs:string">
+					<xs:pattern value="text|html"/>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    	<xs:attribute name="src" type="RFC3987"/>
+	</xs:complexType>		
+
+    <xs:simpleType name="RFC3339">
+        <xs:restriction base="xs:dateTime">
+	      	<!-- Le regex correspondant à la RFC 3339 -->
+            <xs:pattern value="\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(Z|([+-]\d{2}:\d{2}))"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+	<xs:simpleType name="RFC3987">
+		<!-- Validation de l'URL selon la RFC 3987 sans espaces, tabulations, et certains symboles -->
+        <xs:restriction base="xs:anyURI">
+        	<!-- L'expression régulière exclut les espaces, tabulations, et certains symboles -->
+        	<xs:pattern value="[^\s\-_~@]+(\.[^\s\-_~@]+)*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+	<xs:simpleType name="RFC4122">
+        <xs:restriction base="xs:anyURI">
+            <!-- URL qui contient un UUID au format RFC 4122 -->
+            <xs:pattern value="https?://[a-zA-Z0-9.-]+/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+	<xs:simpleType name="RFC6530">
+        <xs:restriction base="xs:string">
+			<!-- doit être un mail conforme à la RFC 6530 -->
+			<xs:pattern value="[a-zA-Z0-9]+@[a-zA-Z0-9]+\.[a-zA-Z]{2,}"/>
+		</xs:restriction>
+    </xs:simpleType>
+
+	<xs:simpleType name="MIMEType">
+        <xs:restriction base="xs:anyURI">
+	      	<!-- Validation du type MIME (ex. text/html, application/json) -->
+          	<xs:pattern value="\w+/[-+.\w]+"/>
+		</xs:restriction>
+    </xs:simpleType>
+</xs:schema>

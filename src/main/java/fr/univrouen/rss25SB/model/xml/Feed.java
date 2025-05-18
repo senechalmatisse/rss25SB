@@ -2,7 +2,10 @@ package fr.univrouen.rss25SB.model.xml;
 
 import java.time.OffsetDateTime;
 import java.util.*;
+
+import fr.univrouen.rss25SB.model.adapter.OffsetDateTimeXmlAdapter;
 import jakarta.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.*;
 
 /**
@@ -57,7 +60,7 @@ public class Feed {
 
     /** Date de publication du flux. */
     @XmlElement(namespace = "http://univ.fr/rss25", required = true)
-    @XmlSchemaType(name = "dateTime")
+    @XmlJavaTypeAdapter(OffsetDateTimeXmlAdapter.class)
     private OffsetDateTime pubDate;
 
     /** Informations de droits d’auteur. */
@@ -80,6 +83,11 @@ public class Feed {
     @XmlAttribute(name = "version", required = true)
     private String version;
 
+    /**
+     * Getter sécurisé pour la liste des liens. Initialise si nécessaire.
+     *
+     * @return la liste des liens associés au flux
+     */
     public List<Link> getLink() {
         if (link == null) {
             link = new ArrayList<>();
@@ -87,6 +95,11 @@ public class Feed {
         return link;
     }
 
+    /**
+     * Getter sécurisé pour la liste des articles. Initialise si nécessaire.
+     *
+     * @return la liste des articles présents dans le flux
+     */
     public List<Item> getItem() {
         if (item == null) {
             item = new ArrayList<>();

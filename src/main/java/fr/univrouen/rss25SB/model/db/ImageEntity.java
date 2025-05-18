@@ -30,15 +30,15 @@ public class ImageEntity {
      * Type MIME de l’image (ex. "image/png", "image/jpeg").
      * Ce champ est obligatoire.
      */
-    @Column(name = "image_type", nullable = false)
+    @Column(name = "image_type")
     private String type;
 
     /** URL de l’image. Ce champ est obligatoire. */
-    @Column(name = "href", nullable = false)
+    @Column(name = "href")
     private String href;
 
     /** Texte alternatif pour l’image. Ce champ est obligatoire. */
-    @Column(name = "alt", nullable = false)
+    @Column(name = "alt")
     private String alt;
 
     /** Taille de l’image en octets. Ce champ est optionnel. */

@@ -1,6 +1,9 @@
 package fr.univrouen.rss25SB.repository;
 
 import fr.univrouen.rss25SB.model.db.ItemEntity;
+
+import java.time.OffsetDateTime;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -24,4 +27,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * @see org.springframework.data.jpa.repository.JpaRepository
  */
 public interface ItemRepository extends JpaRepository<ItemEntity, Long> {
+
+    /**
+     * Vérifie si un article existe avec le même titre et la même date de publication.
+     *
+     * @param title     le titre de l’article
+     * @param published la date de publication
+     * @return true si un article avec ces attributs existe, false sinon
+     */
+    boolean existsByTitleAndPublished(String title, OffsetDateTime published);
 }

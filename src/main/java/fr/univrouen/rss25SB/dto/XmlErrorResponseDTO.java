@@ -1,5 +1,6 @@
 package fr.univrouen.rss25SB.dto;
 
+import fr.univrouen.rss25SB.utils.constants.ResponseStatusConstants;
 import jakarta.xml.bind.annotation.*;
 import lombok.*;
 
@@ -34,7 +35,7 @@ public class XmlErrorResponseDTO {
 
     /** Statut de la réponse d’erreur (par défaut : "ERROR"). */
     @XmlElement(required = true)
-    private String status = "ERROR";
+    private String status = ResponseStatusConstants.ERROR;
 
     /**
      * Constructeur avec identifiant.

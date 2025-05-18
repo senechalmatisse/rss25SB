@@ -52,7 +52,6 @@ public class ItemEntity {
     @Column
     private OffsetDateTime updated;
 
-
     /**
      * Contenu principal de l’article, incluant type MIME et source.
      * Représenté comme classe embarquée {@link ContentEntity}.
@@ -65,6 +64,12 @@ public class ItemEntity {
      * Représentée comme classe embarquée {@link ImageEntity}.
      */
     @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "type", column = @Column(name = "image_type", nullable = true)),
+        @AttributeOverride(name = "href", column = @Column(name = "href", nullable = true)),
+        @AttributeOverride(name = "alt", column = @Column(name = "alt", nullable = true)),
+        @AttributeOverride(name = "length", column = @Column(name = "length", nullable = true))
+    })
     private ImageEntity image;
 
     /**

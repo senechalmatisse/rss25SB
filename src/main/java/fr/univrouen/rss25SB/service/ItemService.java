@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -21,9 +22,10 @@ import java.util.stream.Collectors;
  * </p>
  *
  * @author Matisse SENECHAL
- * @version 1.0
+ * @version 3.0
  * @see ItemSummaryDTO
  * @see ItemRepository
+ * @see Item
  */
 @AllArgsConstructor
 @Service
@@ -33,16 +35,16 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     /**
-     * Récupère tous les articles stockés en base de données, puis les convertit
-     * en objets {@link ItemSummaryDTO}, contenant uniquement les informations :
+     * Récupère tous les articles stockés en base, puis les convertit
+     * en objets {@link ItemSummaryDTO}, contenant uniquement :
      * <ul>
-     *     <li>id : identifiant unique</li>
-     *     <li>title : titre de l’article</li>
-     *     <li>date : date de publication (au format RFC 3339)</li>
-     *     <li>guid : identifiant global</li>
+     *     <li>ID</li>
+     *     <li>Title</li>
+     *     <li>GUID</li>
+     *     <li>Date (formatée RFC3339)</li>
      * </ul>
      *
-     * @return une liste d’objets {@link ItemSummaryDTO}
+     * @return liste d’articles sous forme résumée
      */
     public List<ItemSummaryDTO> getAllItemSummaries() {
         return itemRepository.findAll().stream()
@@ -55,12 +57,46 @@ public class ItemService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Recherche un article complet en base et le convertit au format XML JAXB.
+     *
+     * @param id identifiant de l’article
+     * @return {@link Optional} contenant l’objet {@link Item} si trouvé, vide sinon
+     */
     public Optional<Item> getItemAsXmlById(Long id) {
         return itemRepository.findById(id)
             .map(itemEntity -> ItemMapper.toXml(itemEntity));
     }
 
+    /**
+     * Récupère une entité brute {@link ItemEntity} depuis la base.
+     * 
+     * @param id identifiant de l’article
+     * @return {@link Optional} avec l’entité si trouvée
+     */
     public Optional<ItemEntity> getItemById(Long id) {
         return itemRepository.findById(id);
+    }
+
+    /**
+     * Vérifie si un article avec un titre et une date de publication spécifiques existe déjà.
+     *
+     * @param title     le titre à vérifier
+     * @param published la date de publication
+     * @return {@code true} si un article correspondant existe, sinon {@code false}
+     */
+    public boolean itemExists(String title, OffsetDateTime published) {
+        return itemRepository.existsByTitleAndPublished(title, published);
+    }
+
+    /**
+     * Convertit un objet XML {@link Item} en entité {@link ItemEntity} et l’enregistre en base.
+     *
+     * @param item objet XML à enregistrer
+     * @return identifiant de l’article persisté
+     */
+    public Long saveItemFromXml(Item item) {
+        ItemEntity entity = ItemMapper.toEntity(item);
+        return itemRepository.save(entity).getId();
     }
 }
