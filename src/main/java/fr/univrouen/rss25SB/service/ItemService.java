@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,18 +78,18 @@ public class ItemService {
     }
 
     /**
-     * Vérifie si un article avec un titre et une date de publication spécifiques existe déjà.
+     * Vérifie si un article avec le guid spécifié existe déjà en base.
      *
-     * @param title     le titre à vérifier
-     * @param published la date de publication
-     * @return {@code true} si un article correspondant existe, sinon {@code false}
+     * @param guid identifiant global unique de l’article (RFC 4122)
+     * @return {@code true} si un article avec ce guid est déjà présent, sinon {@code false}
      */
-    public boolean itemExists(String title, OffsetDateTime published) {
-        return itemRepository.existsByTitleAndPublished(title, published);
+    public boolean itemExists(String guid) {
+        return itemRepository.existsByGuid(guid);
     }
 
     /**
-     * Convertit un objet XML {@link Item} en entité {@link ItemEntity} et l’enregistre en base.
+     * Convertit un objet XML {@link Item}
+     * en entité {@link ItemEntity} et l’enregistre en base.
      *
      * @param item objet XML à enregistrer
      * @return identifiant de l’article persisté
@@ -98,5 +97,21 @@ public class ItemService {
     public Long saveItemFromXml(Item item) {
         ItemEntity entity = ItemMapper.toEntity(item);
         return itemRepository.save(entity).getId();
+    }
+
+    /**
+     * Supprime un article à partir de son identifiant.
+     * 
+     * @param id identifiant de l’article à supprimer
+     * @return {@code true} si la suppression a été effectuée, sinon {@code false}
+     */
+    public boolean deleteItemById(Long id) {
+        if (!itemRepository.existsById(id)) {
+            return false;
+        }
+
+        itemRepository.deleteById(id);
+
+        return true;
     }
 }

@@ -41,7 +41,7 @@ public class ItemEntity {
      * Généralement une URL ou un identifiant stable.
      * Ce champ est obligatoire.
      */
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String guid;
 
     /** Date de publication de l’article (avec fuseau horaire). */

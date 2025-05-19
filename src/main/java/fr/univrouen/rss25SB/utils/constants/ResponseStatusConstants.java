@@ -11,7 +11,7 @@ package fr.univrouen.rss25SB.utils.constants;
  * <p>Cette classe est déclarée {@code final} et ne peut pas être instanciée.
  *
  * @author Matisse SENECHAL
- * @version 1.0
+ * @version 2.0
  */
 public final class ResponseStatusConstants {
 
@@ -24,6 +24,9 @@ public final class ResponseStatusConstants {
 
     /** Statut de succès à utiliser dans les réponses XML d’insertion. */
     public static final String INSERTED = "INSERTED";
+
+    /** Statut de succès à utiliser dans les réponses XML de suppression. */
+    public static final String DELETED = "DELETED";
 
     /** Statut d’échec à utiliser dans les réponses XML en cas d’erreur. */
     public static final String ERROR = "ERROR";

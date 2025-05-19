@@ -62,24 +62,33 @@ public class InsertController {
     )
     public ResponseEntity<InsertResponseDTO> insertRssFeed(@RequestBody String xmlContent) {
         try {
-            // Désérialisation XML vers objet Java Feed + validation via XSD
+            // Désérialisation et validation XSD
             Feed feed = XmlUtil.unmarshal(xmlContent, Feed.class, Constants.XSD_PATH);
 
-            // Insertion uniquement des articles n’existant pas déjà en base
+            // Filtrage et insertion des nouveaux items
             List<Long> insertedIds = feed.getItem().stream()
-                .filter(item -> !itemService.itemExists(item.getTitle(), item.getPublished()))
+                .filter(item -> !itemService.itemExists(item.getGuid()))
                 .map(itemService::saveItemFromXml)
                 .toList();
 
-            // Retour de la réponse avec la liste des IDs
-            // ou une erreur s’il n’y a aucun nouvel article
-            return ResponseEntity.ok(
-                insertedIds.isEmpty()
-                        ? InsertResponseDTO.error()              // aucun article inséré
-                        : InsertResponseDTO.success(insertedIds) // articles insérés avec succès
-            );
+            // Construction de la réponse avec code HTTP adapté
+            if (insertedIds.isEmpty()) {
+                // Aucun nouvel article inséré : 204 No Content
+                return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                        .body(InsertResponseDTO.error());
+            }
+
+            // Articles insérés : 201 Created
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(InsertResponseDTO.success(insertedIds));
         } catch (JAXBException | SAXException e) {
-            return ResponseEntity.ok(InsertResponseDTO.error());
+            // Flux XML invalide : 400 Bad Request
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(InsertResponseDTO.error());
+        } catch (Exception e) {
+            // Erreur inattendue : 500 Internal Server Error
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(InsertResponseDTO.error());
         }
     }
 }

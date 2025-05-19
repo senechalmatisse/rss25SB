@@ -19,13 +19,13 @@ import lombok.*;
  *
  * <p>Structure XML attendue :</p>
  * <pre>{@code
- * <insertResponse>
+ * <inserted>
  *     <ids>
  *         <id>1</id>
  *         <id>2</id>
  *     </ids>
  *     <status>inserted</status>
- * </insertResponse>
+ * </inserted>
  * }</pre>
  *
  * @author Matisse SENECHAL
@@ -33,7 +33,7 @@ import lombok.*;
  */
 @AllArgsConstructor
 @Getter @Setter @NoArgsConstructor
-@XmlRootElement(name = "insertResponse")
+@XmlRootElement(name = "inserted")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class InsertResponseDTO {
 
@@ -68,7 +68,7 @@ public class InsertResponseDTO {
     /**
      * Fabrique une réponse d’échec d’insertion.
      *
-     * @return un objet {@link InsertResponseDTO} avec statut {@code "error"}
+     * @return un objet {@link XmlErrorResponseDTO} avec statut {@code "error"}
      */
     public static InsertResponseDTO error() {
         InsertResponseDTO dto = new InsertResponseDTO();
