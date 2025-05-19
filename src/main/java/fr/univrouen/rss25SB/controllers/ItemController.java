@@ -72,11 +72,18 @@ public class ItemController {
         // sinon on insère un drapeau d’erreur
         Map<String, Object> variables = itemOptional.isPresent()
                 ? Map.of("item", itemOptional.get())
-                : Map.of("error", true, "id", id);
+                : Map.of(
+                    "error", true,
+                    "id", id,
+                    "message", "L’article avec l’identifiant " + id + " est introuvable."
+                );
 
         // Génération du HTML via le moteur de template
         String html = htmlRenderer.render("item", variables);
 
-        return ResponseEntity.ok(html);
+        HttpStatus status = itemOptional.isPresent()
+                                            ? HttpStatus.OK
+                                            : HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(status).body(html);
     }
 }

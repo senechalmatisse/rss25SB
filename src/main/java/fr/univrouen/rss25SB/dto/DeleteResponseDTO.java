@@ -31,6 +31,10 @@ public class DeleteResponseDTO {
     @XmlElement(required = true)
     private String status = ResponseStatusConstants.DELETED;
 
+    /** Description de l'erreur rencontrée */
+    @XmlElement(name = "description")
+    private String description;
+
     /**
      * Constructeur avec ID.
      *

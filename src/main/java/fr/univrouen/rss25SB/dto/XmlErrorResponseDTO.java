@@ -15,6 +15,7 @@ import lombok.*;
  * <error>
  *     <id>123</id>
  *     <status>ERROR</status>
+ *     <description>...</description>
  * </error>
  * }</pre>
  *
@@ -37,12 +38,18 @@ public class XmlErrorResponseDTO {
     @XmlElement(required = true)
     private String status = ResponseStatusConstants.ERROR;
 
+    /** Description de l'erreur rencontrée */
+    @XmlElement(name = "description")
+    private String description;
+
     /**
      * Constructeur avec identifiant.
      *
      * @param id identifiant de l’article non trouvé
+     * @param descritpion descritpion de la première erreur detectée
      */
-    public XmlErrorResponseDTO(Long id) {
+    public XmlErrorResponseDTO(Long id, String description) {
         this.id = id;
+        this.description = description;
     }
 }

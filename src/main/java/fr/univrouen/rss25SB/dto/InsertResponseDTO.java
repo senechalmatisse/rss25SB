@@ -24,7 +24,7 @@ import lombok.*;
  *         <id>1</id>
  *         <id>2</id>
  *     </ids>
- *     <status>inserted</status>
+ *     <status>INSERTED</status>
  * </inserted>
  * }</pre>
  *
@@ -52,6 +52,10 @@ public class InsertResponseDTO {
     @XmlElement(name = "status", required = true)
     private String status;
 
+    /** Description de l'erreur rencontrée */
+    @XmlElement(name = "description")
+    private String description;
+
     /**
      * Fabrique une réponse de succès contenant la liste des identifiants insérés.
      *
@@ -68,11 +72,15 @@ public class InsertResponseDTO {
     /**
      * Fabrique une réponse d’échec d’insertion.
      *
-     * @return un objet {@link XmlErrorResponseDTO} avec statut {@code "error"}
+     * @param descritpion descritpion de la première erreur detectée
+     * 
+     * @return un objet {@link XmlErrorResponseDTO}
+     *         avec statut {@code "error"} et une description de l'erreur
      */
-    public static InsertResponseDTO error() {
+    public static InsertResponseDTO error(String description) {
         InsertResponseDTO dto = new InsertResponseDTO();
         dto.setStatus(ResponseStatusConstants.ERROR);
+        dto.setDescription(description);
         return dto;
     }
 }

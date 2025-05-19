@@ -65,22 +65,34 @@ public class DeleteController {
      */
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> deleteItem(@PathVariable Long id) throws JAXBException {
+        String messageErreur = "Erreur lors de la suppression d’un flux rss25SB:\n";
+
         try {
             boolean deleted = itemService.deleteItemById(id);
 
-            Object response = deleted
-                    ? new DeleteResponseDTO(id)
-                    : new XmlErrorResponseDTO(id);
+            Object response;
+            HttpStatus status;
+
+            if (deleted) {
+                response = new DeleteResponseDTO(id);
+                status = HttpStatus.OK;
+            } else {
+                messageErreur += "L'article avec l'identifiant: " + id + " n'a pas était trouvé ou a déjà été supprimé.";
+                response = new XmlErrorResponseDTO(id, messageErreur);
+                status = HttpStatus.NOT_FOUND;
+            }
 
             String xml = XmlUtil.marshal(response);
-
-            return deleted
-                    ? ResponseEntity.ok(xml)
-                    : ResponseEntity.status(HttpStatus.NOT_FOUND).body(xml);
+            return ResponseEntity.status(status).body(xml);
         } catch (JAXBException e) {
+            // Sérialisation manuelle minimale en cas de panne JAXB
+            messageErreur += "Erreur interne du serveur lors de la sérialisation de la réponse.";
+            String fallback = "<error><id>" + id + "</id><status>ERROR</status>" +
+                              "<description>" + messageErreur + "</description>" +
+                              "</error>";
             return ResponseEntity
                     .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("<error><id>" + id + "</id><status>ERROR</status></error>");
+                    .body(fallback);
         }
     }
 }

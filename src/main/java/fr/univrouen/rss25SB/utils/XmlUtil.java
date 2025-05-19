@@ -73,4 +73,12 @@ public class XmlUtil {
         marshaller.marshal(object, writer);
         return writer.toString();
     }
+
+    public static String extractFirstErrorMessage(Throwable exception) {
+        Throwable current = exception;
+        while (current.getCause() != null) {
+            current = current.getCause();
+        }
+        return current.getMessage();
+    }
 }

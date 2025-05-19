@@ -5,8 +5,10 @@ import fr.univrouen.rss25SB.model.xml.*;
 import fr.univrouen.rss25SB.service.ItemService;
 import fr.univrouen.rss25SB.utils.XmlUtil;
 import fr.univrouen.rss25SB.utils.constants.Constants;
+
 import jakarta.xml.bind.*;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.xml.sax.SAXException;
@@ -61,6 +63,8 @@ public class InsertController {
         produces = MediaType.APPLICATION_XML_VALUE
     )
     public ResponseEntity<InsertResponseDTO> insertRssFeed(@RequestBody String xmlContent) {
+        String messageErreur = "Erreur lors de la soumission d’un flux rss25SB:\n";
+
         try {
             // Désérialisation et validation XSD
             Feed feed = XmlUtil.unmarshal(xmlContent, Feed.class, Constants.XSD_PATH);
@@ -73,22 +77,25 @@ public class InsertController {
 
             // Construction de la réponse avec code HTTP adapté
             if (insertedIds.isEmpty()) {
+                messageErreur += "aucun article(s) inséré(s) parce qu'il(s) existe(nt) déjà.";
                 // Aucun nouvel article inséré : 204 No Content
                 return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                        .body(InsertResponseDTO.error());
+                        .body(InsertResponseDTO.error(messageErreur));
             }
 
             // Articles insérés : 201 Created
             return ResponseEntity.status(HttpStatus.CREATED)
                     .body(InsertResponseDTO.success(insertedIds));
         } catch (JAXBException | SAXException e) {
+            messageErreur += XmlUtil.extractFirstErrorMessage(e);
             // Flux XML invalide : 400 Bad Request
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(InsertResponseDTO.error());
+                    .body(InsertResponseDTO.error(messageErreur));
         } catch (Exception e) {
+            messageErreur += XmlUtil.extractFirstErrorMessage(e);
             // Erreur inattendue : 500 Internal Server Error
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(InsertResponseDTO.error());
+                    .body(InsertResponseDTO.error(messageErreur));
         }
     }
 }

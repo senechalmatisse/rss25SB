@@ -34,7 +34,8 @@ public class ItemSummaryListDTO {
 
     /**
      * Liste des articles au format résumé.
-     * Chaque élément correspond à un objet {@link ItemSummaryDTO} sérialisé en balise {@code <item>}.
+     * Chaque élément correspond à un objet {@link ItemSummaryDTO}
+     * sérialisé en balise {@code <item>}.
      */
     @XmlElement(name = "item")
     private List<ItemSummaryDTO> items;

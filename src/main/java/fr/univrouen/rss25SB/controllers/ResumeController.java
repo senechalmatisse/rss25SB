@@ -108,17 +108,22 @@ public class ResumeController {
      */
     @GetMapping(value = "/xml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> getItemByIdAsXML(@PathVariable Long id) throws JAXBException {
-        // Recherche de l’article par ID
         Optional<Item> itemOptional = itemService.getItemAsXmlById(id);
 
         Object toMarshal;
-        if (itemOptional.isPresent()) {     // Si trouvé, on sérialise l’article  
+        HttpStatus status;
+
+        if (itemOptional.isPresent()) {
             toMarshal = itemOptional.get();
-        } else {                            // sinon, une erreur XML
-            toMarshal = new XmlErrorResponseDTO(id);
+            status = HttpStatus.OK;
+        } else {
+            String messageErreur = "Erreur lors de la récupération d’un flux rss25SB:\n" +
+                                   "L'article avec l'identifiant: " + id + " n'existe pas.";
+            toMarshal = new XmlErrorResponseDTO(id, messageErreur);
+            status = HttpStatus.NOT_FOUND;
         }
 
         String xml = XmlUtil.marshal(toMarshal);
-        return ResponseEntity.ok(xml);
+        return ResponseEntity.status(status).body(xml);
     }
 }
