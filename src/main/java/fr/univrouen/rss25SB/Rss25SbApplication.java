@@ -2,41 +2,44 @@ package fr.univrouen.rss25SB;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+
+import fr.univrouen.rss25SB.client.config.Rss25SBClientProperties;
 
 /**
  * Classe principale de l’application Spring Boot RSS 2.5 SB.
  * <p>
- * Cette classe contient la méthode {@code main} qui sert de point d’entrée
- * à l’application. Elle initialise et lance le contexte Spring Boot.
+ * Cette classe sert de point d’entrée à l’exécution de l’application.
+ * Elle configure automatiquement le contexte Spring et déclenche le lancement
+ * du serveur embarqué (Tomcat, Jetty, ...).
  * </p>
  *
- * <p>Annotation {@code @SpringBootApplication} :
+ * <p>
+ * Le lancement de cette classe déclenchera l’exécution du projet, y compris :
+ * </p>
  * <ul>
- *     <li>Active la configuration automatique de Spring</li>
- *     <li>Scanne les composants dans le package courant et les sous-packages</li>
- *     <li>Configure l’application en tant qu’application Spring Boot autonome</li>
+ *     <li>Le démarrage de l’API REST de gestion des flux rss25SB</li>
+ *     <li>Le chargement du client d’envoi de flux (outil de transfert)</li>
+ *     <li>L’accès aux fonctionnalités de conversion et d’affichage</li>
  * </ul>
- * </p>
- *
- * <p>Exécution :</p>
- * <pre>{@code
- * $ mvn spring-boot:run
- * }</pre>
  *
  * @author Matisse SENECHAL
- * @version 1.0
+ * @version 2.0
  */
 @SpringBootApplication
+@EnableConfigurationProperties(Rss25SBClientProperties.class)
 public class Rss25SbApplication {
 
     /**
-     * Point d’entrée principal de l’application RSS 2.5 SB.
+     * Méthode principale (main) de l’application.
+     * <p>
+     * Elle utilise {@link SpringApplication#run(Class, String...)} pour
+     * lancer l’environnement Spring Boot et exposer les endpoints REST.
+     * </p>
      *
-     * @param args arguments de la ligne de commande
+     * @param args arguments de la ligne de commande, inutilisés ici
      */
 	public static void main(String[] args) {
-        // Pour changer dynamiquement le port :
-        // System.getProperties().put("server.port", 8100);
 		SpringApplication.run(Rss25SbApplication.class, args);
     }
 }
