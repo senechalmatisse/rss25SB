@@ -1,0 +1,383 @@
+{
+	"info": {
+		"_postman_id": "80dd04db-e6e8-45d9-a95a-69c007537da4",
+		"name": "rss25SB_senechal",
+		"description": "_Collection de requêtes de test pour le service REST rss25SB._",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30124004"
+	},
+	"item": [
+		{
+			"name": "Page d’accueil (I.1)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						""
+					]
+				},
+				"description": "Affiche la page d’accueil du projet avec nom, version, auteur, logo."
+			},
+			"response": []
+		},
+		{
+			"name": "Page d'aide (I.2)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/help",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"help"
+					]
+				},
+				"description": "Liste les opérations disponibles (URL, méthode, description)."
+			},
+			"response": []
+		},
+		{
+			"name": "Liste articles XML (I.3.1)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/rss25SB/resume/xml",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"resume",
+						"xml"
+					]
+				},
+				"description": "Retourne une liste XML des articles (id, date, guid)."
+			},
+			"response": []
+		},
+		{
+			"name": "Liste articles HTML (I.3.2)",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/rss25SB/resume/html",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"resume",
+						"html"
+					]
+				},
+				"description": "Retourne une page HTML listant les articles."
+			},
+			"response": []
+		},
+		{
+			"name": "Article XML (I.4.1)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/rss25SB/resume/xml/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"resume",
+						"xml",
+						"{{id}}"
+					]
+				},
+				"description": "Retourne l’article complet en XML. Erreur XML si id invalide."
+			},
+			"response": []
+		},
+		{
+			"name": "Article HTML (I.4.2)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/rss25SB/html/{{id}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"html",
+						"{{id}}"
+					]
+				},
+				"description": "Retourne l’article complet en HTML. Erreur HTML si id invalide."
+			},
+			"response": []
+		},
+		{
+			"name": "Insertion article XML (I.5)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/xml",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<p:feed xmlns:p=\"http://univ.fr/rss25\"\n        xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n        xsi:schemaLocation=\"http://univ.fr/rss25 rss25.xsd\"\n        lang=\"fr\" version=\"25\">\n  <p:title>Flux RSS Complet</p:title>\n  <p:pubDate>2025-05-19T10:00:00+02:00</p:pubDate>\n  <p:copyright>Universite de Rouen</p:copyright>\n  \n  <p:link rel=\"self\" type=\"application/xml\" href=\"http://example.com/rss25.xml\"/>\n  <p:link rel=\"alternate\" type=\"text/html\" href=\"http://example.com/page\"/>\n\n  <p:item>\n    <p:guid>https://example.com/123e4567-e89b-12d3-a456-426614174000</p:guid>\n    <p:title>Article Complet</p:title>\n    <p:category term=\"actu\"/>\n    <p:category term=\"tech\"/>\n    <p:published>2025-05-18T12:00:00+02:00</p:published>\n    <p:image type=\"image/PNG\" href=\"http://example.com/image.png\" alt=\"Illustration\" length=\"5000\"/>\n    <p:content type=\"html\" src=\"http://example.com/article.html\"/>\n    <p:author name=\"Jean Dupont\" email=\"jean@example.com\" uri=\"http://example.com/jean\"/>\n    <p:contributor name=\"Claire Martin\" email=\"claire@example.com\" uri=\"http://example.com/claire\"/>\n  </p:item>\n\n  <p:item>\n    <p:guid>https://example.com/223e4567-e89b-12d3-a456-426614174001</p:guid>\n    <p:title>Article 2</p:title>\n    <p:category term=\"culture\"/>\n    <p:updated>2025-05-19T08:00:00+02:00</p:updated>\n    <p:image type=\"image/PNG\" href=\"http://example.com/image.png\" alt=\"Illustration\" length=\"5000\"/>\n    <p:content type=\"text\" src=\"test\"/>\n    <p:author name=\"John Doe\" email=\"john@example.com\" uri=\"http://example.com/john\"/>\n    <p:author name=\"Jane Doe\" email=\"jane@example.com\" uri=\"http://example.com/jane\"/>\n    <p:contributor name=\"Claire Martin\" email=\"claire@example.com\" uri=\"http://example.com/claire\"/>\n    <p:contributor name=\"Martin Claire\" email=\"martin@example.com\" uri=\"http://example.com/martin\"/>\n  </p:item>\n</p:feed>",
+					"options": {
+						"raw": {
+							"language": "xml"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/rss25SB/insert",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"insert"
+					]
+				},
+				"description": "Ajoute un flux conforme au XSD. Réponse XML avec status ou erreur."
+			},
+			"response": []
+		},
+		{
+			"name": "Suppression article (I.6)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/xml",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/rss25SB/delete/{{id}} ",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"delete",
+						"{{id}} "
+					]
+				},
+				"description": "Supprime un article selon son ID. Retour XML avec statut DELETED ou ERROR"
+			},
+			"response": []
+		},
+		{
+			"name": "Affichage du formulaire d’upload (HTML) (III.1",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{base_url}}/rss25SB/insert",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Upload XML (HTML response) (III.1)",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true
+				}
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "text/html",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/home/matisse/Documents/FAC/Master/M1/Semestre_2/XML/Projet/rss25SB/resources/only_required.xml"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{base_url}}/rss25SB/insert/html",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"rss25SB",
+						"insert",
+						"html"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://rss25sb-senechal.cleverapps.io",
+			"type": "string"
+		},
+		{
+			"key": "id",
+			"value": "1",
+			"type": "string"
+		}
+	]
+}

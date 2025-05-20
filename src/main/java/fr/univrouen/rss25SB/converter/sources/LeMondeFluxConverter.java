@@ -36,7 +36,7 @@ public class LeMondeFluxConverter {
     private static final String DEFAULT_IMAGE_ALT = "Image Le Monde";
 
     /** Type de contenu associé à la description d’un article */
-    private static final String DEFAULT_CONTENT_TYPE = "text/plain";
+    private static final String DEFAULT_CONTENT_TYPE = "text";
 
     /**
      * Convertit un flux RSS 2.0 complet (sous forme XML brut) en objet {@link Feed}.
@@ -47,6 +47,7 @@ public class LeMondeFluxConverter {
      * @throws RuntimeException si une erreur de parsing ou de conversion survient
      */
     public Feed convert(String xmlContent) {
+        log.debug("LeMondeFluxConverter.convert() appelé, taille du XML = {} caractères", xmlContent.length());
         try {
             // Préparation du parseur DOM
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -55,21 +56,22 @@ public class LeMondeFluxConverter {
 
             // Extraction des éléments <item>
             NodeList itemNodes = doc.getElementsByTagName("item");
-            List<Item> items = new ArrayList<>();
+            log.debug("{} éléments <item> trouvés", itemNodes.getLength());
 
             // Conversion de chaque <item> en objet rss25SB
+            List<Item> items = new ArrayList<>();
             for (int i = 0; i < itemNodes.getLength(); i++) {
-                Element itemElement = (Element) itemNodes.item(i);
-                items.add(convertItem(itemElement));
+                items.add(convertItem((Element) itemNodes.item(i)));
             }
 
             // Assemblage final dans un objet Feed
             Feed feed = new Feed();
             feed.setItem(items);
+            log.debug("Conversion terminée, {} articles générés", items.size());
             return feed;
 
         } catch (Exception e) {
-            log.error("Erreur de conversion flux Le Monde : {}", e.getMessage());
+            log.error("Échec de conversion du flux Le Monde : {}", e.getMessage(), e);
             throw new RuntimeException("Échec de conversion du flux RSS Le Monde", e);
         }
     }
@@ -86,9 +88,29 @@ public class LeMondeFluxConverter {
         item.setTitle(getTextContent(itemElement, "title"));
         item.setGuid(getTextContent(itemElement, "guid"));
 
-        // Parsing de la date de publication au format RFC 1123
-        String pubDate = getTextContent(itemElement, "pubDate");
-        item.setPublished(OffsetDateTime.parse(pubDate, DateTimeFormatter.RFC_1123_DATE_TIME));
+        // Extraction de la date (choix entre <updated> ou <pubDate>)
+        String updatedStr = getTextContent(itemElement, "updated");
+        String pubDateStr = getTextContent(itemElement, "pubDate");
+
+        OffsetDateTime pubDate = null;
+        OffsetDateTime updatedDate = null;
+
+        if (pubDateStr != null && !pubDateStr.isBlank()) {
+            pubDate = OffsetDateTime.parse(pubDateStr, DateTimeFormatter.RFC_1123_DATE_TIME);
+            item.setPublished(pubDate);
+            log.debug("Date <pubDate> trouvée : {}", pubDateStr);
+        }
+
+        if (updatedStr != null && !updatedStr.isBlank()) {
+            updatedDate = OffsetDateTime.parse(updatedStr, DateTimeFormatter.RFC_1123_DATE_TIME);
+            item.setUpdated(updatedDate);
+            log.debug("Date <updated> trouvée : {}", updatedStr);
+        }
+
+        // Si aucune des deux n’est présente, log et ignorer
+        if (pubDate == null && updatedDate == null) {
+            log.warn("Aucune date <pubDate> ni <updated> trouvée pour l’article");
+        }
 
         // Construction du contenu
         Content content = new Content();
@@ -102,6 +124,19 @@ public class LeMondeFluxConverter {
             item.setImage(image);
         }
 
+        // Catégorie par défaut
+        Category defaultCategory = new Category();
+        defaultCategory.setTerm("Actualités");
+        item.getCategory().add(defaultCategory);
+
+        // Auteur arbitraire
+        Author defaultAuthor = new Author();
+        defaultAuthor.setName("Rédaction Le Monde");
+        defaultAuthor.setEmail("contact@lemonde.fr");
+        defaultAuthor.setUri("https://www.lemonde.fr");
+        item.getAuthorOrContributor().add(defaultAuthor);
+
+        log.debug("Item converti : title='{}', guid='{}'", item.getTitle(), item.getGuid());
         return item;
     }
 
@@ -123,6 +158,18 @@ public class LeMondeFluxConverter {
         image.setHref(media.getAttribute("url"));
         image.setType(DEFAULT_IMAGE_TYPE);
         image.setAlt(getTextContent(media, "media:description", DEFAULT_IMAGE_ALT));
+
+        // Estimation de la longueur en octets si width et height présents
+        try {
+            int width = Integer.parseInt(media.getAttribute("width"));
+            int height = Integer.parseInt(media.getAttribute("height"));
+            int estimatedLength = width * height * 3;
+            image.setLength(estimatedLength);
+        } catch (NumberFormatException e) {
+            log.warn("Attributs width/height absents ou invalides. Valeur length par défaut utilisée.");
+            image.setLength(50000); // Valeur arbitraire par défaut
+        }
+
         return image;
     }
 
@@ -148,6 +195,8 @@ public class LeMondeFluxConverter {
      */
     private String getTextContent(Element parent, String tagName, String defaultValue) {
         NodeList nodes = parent.getElementsByTagName(tagName);
-        return (nodes.getLength() > 0) ? nodes.item(0).getTextContent().trim() : defaultValue;
+        return (nodes.getLength() > 0)
+            ? nodes.item(0).getTextContent().trim()
+            : defaultValue;
     }
 }

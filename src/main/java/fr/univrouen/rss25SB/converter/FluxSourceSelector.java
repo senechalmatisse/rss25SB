@@ -3,6 +3,8 @@ package fr.univrouen.rss25SB.converter;
 import fr.univrouen.rss25SB.converter.sources.LeMondeFluxConverter;
 import fr.univrouen.rss25SB.model.xml.Feed;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class FluxSourceSelector {
 
     /**
@@ -35,10 +38,16 @@ public class FluxSourceSelector {
      * @throws UnsupportedOperationException si la source du flux est inconnue ou non gérée
      */
     public Feed convert(String rawXml) {
+        log.debug("FluxSourceSelector.convert() appelé, taille du XML = {} caractères", rawXml.length());
         if (rawXml.contains("lemonde.fr")) {
-            return leMondeFluxConverter.convert(rawXml);
+            log.debug("Source détectée : LeMonde.fr -> utilisation de LeMondeFluxConverter");
+            Feed feed = leMondeFluxConverter.convert(rawXml);
+            log.debug("Conversion via LeMondeFluxConverter réussie, {} articles obtenus", feed.getItem().size());
+            return feed;
         }
 
-        throw new UnsupportedOperationException("Flux source non reconnu ou non supporté.");
+        String err = "Flux source non reconnu ou non supporté.";
+        log.warn("FluxSourceSelector.convert() : {}", err);
+        throw new UnsupportedOperationException(err);
     }
 }

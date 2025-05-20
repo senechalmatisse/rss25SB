@@ -88,6 +88,76 @@ a:hover {
     text-decoration: underline;
 }
 
+.method {
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 5px;
+    display: inline-block;
+    font-family: monospace;
+}
+
+/* Style vert pour GET */
+.method-get {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+/* Style jaune pour POST */
+.method-post {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+/* Style rouge pour DELETE */
+.method-delete {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1em;
+}
+
+.form-group {
+    text-align: left;
+}
+
+label {
+    font-weight: bold;
+    margin-bottom: 0.3em;
+    display: block;
+    color: #2c3e50;
+}
+
+input[type="file"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #fff;
+}
+
+button {
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn-primary {
+    background-color: #0077cc;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #005fa3;
+}
+
 /* Responsive table */
 @media screen and (max-width: 768px) {
     table, thead, tbody, th, td, tr {

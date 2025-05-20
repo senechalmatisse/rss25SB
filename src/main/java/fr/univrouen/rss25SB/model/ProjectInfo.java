@@ -21,9 +21,9 @@ public class ProjectInfo {
     /** Version du projet. */
     private final String version;
 
-    /** Nom du ou des développeurs du projet. */
+    /** Nom du développeur du projet. */
     private final String developer;
 
-    /** Chemin relatif du logo de l’université à afficher. */
+    /** Chemin relatif du logo à afficher. */
     private final String logoPath;
 }

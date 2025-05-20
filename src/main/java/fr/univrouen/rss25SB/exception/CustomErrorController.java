@@ -58,6 +58,8 @@ public class CustomErrorController implements ErrorController {
         String uri = String.valueOf(request.getAttribute(RequestDispatcher.ERROR_REQUEST_URI));
         String message = String.valueOf(request.getAttribute(RequestDispatcher.ERROR_MESSAGE));
 
+        log.warn("Erreur interceptée – status : {}, URI : {}, message interne : {}", status, uri, message);
+
         // Création de l’objet de réponse XML personnalisé
         XmlErrorResponseDTO error = new XmlErrorResponseDTO();
         error.setStatus(ResponseStatusConstants.ERROR);
@@ -66,9 +68,11 @@ public class CustomErrorController implements ErrorController {
                 status, uri, message));
 
         try {
-            return ResponseEntity.status(status).body(XmlUtil.marshal(error));
+            String xml = XmlUtil.marshal(error);
+            log.debug("Réponse XML d'erreur générée : {}", xml);
+            return ResponseEntity.status(status).body(xml);
         } catch (JAXBException e) {
-            log.error("Erreur de sérialisation XML dans /error : {}", e.getMessage());
+            log.error("Erreur de sérialisation XML dans /error : {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(DEFAULT_XML_ERROR);
         }
     }

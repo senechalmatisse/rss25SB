@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://univ.fr/rss25" lang="fr" version="25">
+    <title>Flux minimal RSS25</title>
+    <pubDate>2025-05-19T09:00:00+02:00</pubDate>
+    <copyright>Universite de Rouen</copyright>
+    
+    <link rel="self" type="application/rss+xml" href="http://example.com/minimal.xml"/>
+
+    <item>
+        <guid>https://example.com/323e4567-e89b-12d3-a456-426614174002</guid>
+        <title>Article minimal</title>
+        <category term="tech"/>
+        <published>2025-05-18T08:00:00+02:00</published>
+        <content type="text"/>
+        <author name="John Doe"/>
+    </item>
+</feed>

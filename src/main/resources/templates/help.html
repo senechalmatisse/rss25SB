@@ -1,32 +1,38 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" 
-      th:replace="layout :: layout(~{::title}, ~{::section})">
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
 <head>
     <title>Page d'Aide</title>
 </head>
 <body>
-    <section>
-        <h2>Page d'Aide</h2>
-        <p>Voici la liste des opérations disponibles :</p>
+<section>
+    <h2>Page d'Aide</h2>
+    <p>Voici la liste des opérations disponibles :</p>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>URL</th>
-                    <th>Méthode</th>
-                    <th>Description</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="op : ${operations}">
-                    <td>
-                        <a th:href="@{${op.url}}" th:text="${op.url}">/url</a>
-                    </td>
-                    <td th:text="${op.method}">GET</td>
-                    <td th:text="${op.description}">Description de l'opération</td>
-                </tr>
-            </tbody>
-        </table>
-    </section>
+    <table>
+        <thead>
+        <tr>
+            <th>URL</th>
+            <th>Méthode</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="op : ${operations}">
+            <td>
+                <a th:href="@{${op.url}}" th:text="${op.url}">/url</a>
+            </td>
+            <td>
+                <span class="method"
+                      th:text="${op.method}"
+                      th:classappend="' method-' + ${op.method.toLowerCase()}">
+                    GET
+                </span>
+            </td>
+            <td th:text="${op.description}">Description de l'opération</td>
+        </tr>
+        </tbody>
+    </table>
+</section>
 </body>
 </html>

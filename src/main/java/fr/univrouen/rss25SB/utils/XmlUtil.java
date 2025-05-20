@@ -1,6 +1,8 @@
 package fr.univrouen.rss25SB.utils;
 
 import jakarta.xml.bind.*;
+import lombok.extern.slf4j.Slf4j;
+
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -21,6 +23,7 @@ import java.io.*;
  * @author Matisse SENECHAL
  * @version 1.0
  */
+@Slf4j
 public class XmlUtil {
 
     /**
@@ -35,8 +38,10 @@ public class XmlUtil {
      * @throws JAXBException si une erreur de désérialisation se produit (structure incorrecte, balise inconnue, etc.)
      * @throws SAXException si le contenu XML ne respecte pas le schéma défini dans le fichier XSD
      */
+    @SuppressWarnings("unchecked")
     public static <T> T unmarshal(String xmlContent, Class<T> clazz, String xsdPath)
             throws JAXBException, SAXException {
+        log.debug("Début unmarshal pour la classe {} avec XSD={}", clazz.getSimpleName(), xsdPath);
         // Création du contexte JAXB pour la classe cible
         JAXBContext context = JAXBContext.newInstance(clazz);
         Unmarshaller unmarshaller = context.createUnmarshaller();
@@ -49,7 +54,10 @@ public class XmlUtil {
         unmarshaller.setSchema(schema);
 
         // Conversion de la chaîne XML vers un objet Java
-        return (T) unmarshaller.unmarshal(new StringReader(xmlContent));
+        T result = (T) unmarshaller.unmarshal(new StringReader(xmlContent));
+        log.debug("Unmarshal réussi pour {}", clazz.getSimpleName());
+
+        return result;
     }
 
     /**
@@ -62,6 +70,7 @@ public class XmlUtil {
      */
     public static String marshal(Object object) throws JAXBException {
         // Création du contexte JAXB à partir de la classe réelle de l'objet
+        log.debug("Début marshal pour l’objet de classe {}", object.getClass().getSimpleName());
         JAXBContext context = JAXBContext.newInstance(object.getClass());
         Marshaller marshaller = context.createMarshaller();
 
@@ -71,9 +80,21 @@ public class XmlUtil {
         // Sérialisation de l'objet vers une chaîne XML
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);
-        return writer.toString();
+        String xml = writer.toString();
+        log.debug("Marshal réussi ({} octets générés)", xml.length());
+
+        return xml;
     }
 
+    /**
+     * Parcourt la chaîne d’exceptions pour en extraire le message de la cause racine.
+     * <p>
+     * Lorsqu’une exception est enveloppée dans plusieurs niveaux de {@link Throwable#getCause()},
+     * cette méthode descend jusqu’au dernier nœud (la cause première) et renvoie son message.
+     *
+     * @param exception l’exception initiale potentiellement enchaînée
+     * @return le message de la cause racine, ou {@code null} si aucune cause ni message
+     */
     public static String extractFirstErrorMessage(Throwable exception) {
         Throwable current = exception;
         while (current.getCause() != null) {

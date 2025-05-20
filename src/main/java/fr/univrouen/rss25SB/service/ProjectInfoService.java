@@ -2,6 +2,7 @@ package fr.univrouen.rss25SB.service;
 
 import org.springframework.stereotype.Service;
 import fr.univrouen.rss25SB.model.ProjectInfo;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service fournissant les informations générales du projet RSS25SB.
@@ -13,6 +14,7 @@ import fr.univrouen.rss25SB.model.ProjectInfo;
  * @author Matisse SENECHAL
  * @version 1.0
  */
+@Slf4j
 @Service
 public class ProjectInfoService {
 
@@ -22,11 +24,14 @@ public class ProjectInfoService {
      * @return les métadonnées du projet encapsulées dans une instance de {@link ProjectInfo}
      */
     public ProjectInfo getProjectInfo() {
-        return new ProjectInfo(
-            "rss25SB",                          // Nom du projet
-            "1.0",                           // Version du projet
-            "Matisse Senechal",            // Nom du développeur
-            "/logo_univ_rouen.png"          // Chemin relatif du logo
+        log.debug("Récupération des informations du projet");
+        ProjectInfo info = new ProjectInfo(
+            "rss25SB",                  // Nom du projet
+            "1.0",                   // Version du projet
+            "Matisse Senechal",    // Nom du développeur
+            "/logo_univ_rouen.png"  // Chemin relatif du logo
         );
+        log.info("ProjectInfo fourni : {} v{}", info.getName(), info.getVersion());
+        return info;
     }
 }

@@ -4,8 +4,10 @@ import fr.univrouen.rss25SB.dto.*;
 import fr.univrouen.rss25SB.model.xml.Item;
 import fr.univrouen.rss25SB.service.ItemService;
 import fr.univrouen.rss25SB.utils.*;
+import fr.univrouen.rss25SB.utils.constants.XsltFilePath;
 import jakarta.xml.bind.*;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -15,37 +17,37 @@ import java.util.*;
 /**
  * Contrôleur REST permettant d’exposer plusieurs endpoints pour obtenir une
  * version résumée ou complète des articles RSS au format XML ou HTML.
+ *
  * <p>
- * Les articles retournés peuvent être :
+ * Ce contrôleur utilise le service {@link ItemService} pour récupérer les données,
+ * le composant {@link XmlUtil} pour la sérialisation JAXB en XML,
+ * et {@link XsltTransformer} pour générer dynamiquement du HTML à partir d’un XSLT.
+ * </p>
+ *
+ * <p>Les articles retournés peuvent être :</p>
  * <ul>
  *   <li>Résumés (id, date, guid) au format XML ou HTML</li>
  *   <li>Complet (type {@link Item}) au format XML</li>
  * </ul>
- * </p>
  *
- * <p>URL de base : <code>/rss25SB/resume</code></p>
+ * <p><b>URL de base :</b> <code>/rss25SB/resume</code></p>
  *
  * @author Matisse SENECHAL
  * @version 2.0
  */
 @AllArgsConstructor
 @RestController
+@Slf4j
 @RequestMapping("/rss25SB/resume")
 public class ResumeController {
 
     /** Service métier permettant d'accéder aux articles résumés stockés en base. */
     private final ItemService itemService;
 
-    /** Moteur de rendu HTML pour générer dynamiquement les vues (via Thymeleaf). */
-    private final HtmlRenderer htmlRenderer;
-
     /**
      * Endpoint GET exposant un flux XML contenant la liste synthétique des articles RSS.
-     * <p>
-     * Chaque article retourné contient uniquement trois champs : id, date, guid.
-     * </p>
      *
-     * @return {@link ResponseEntity} contenant la représentation XML de la liste résumée
+     * @return {@link ResponseEntity} contenant une chaîne XML de la liste résumée
      * @throws JAXBException en cas d’erreur de sérialisation JAXB
      *
      * <p><b>URL :</b> <code>/rss25SB/resume/xml</code></p>
@@ -54,13 +56,12 @@ public class ResumeController {
      */
     @GetMapping(value = "/xml", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> getItemsAsXML() throws JAXBException {
-        // Récupère la liste résumée des articles
-        ItemSummaryListDTO summaryList = new ItemSummaryListDTO(
-            itemService.getAllItemSummaries()
-        );
+        log.debug("GET /rss25SB/resume/xml appelé");
 
-        // Sérialisation XML avec JAXB via utilitaire
-        String xml = XmlUtil.marshal(summaryList);
+        // Sérialisation en XML des résumés d’articles
+        String xml = XmlUtil.marshal(
+            new ItemSummaryListDTO(itemService.getAllItemSummaries())
+        );
 
         return ResponseEntity.ok(xml);
     }
@@ -68,39 +69,56 @@ public class ResumeController {
     /**
      * Endpoint GET exposant la liste synthétique des articles RSS au format HTML.
      * <p>
-     * Génère dynamiquement une page HTML (via un template "items") contenant tous les articles résumés.
+     * Ce flux est généré dynamiquement à partir de la version XML et transformé via un XSLT.
+     * En cas d’erreur, une page HTML d’erreur est produite à partir d’un {@link XmlErrorResponseDTO}.
      * </p>
      *
-     * @return {@link ResponseEntity} contenant le HTML rendu par le template {@code items.html}
+     * @return {@link ResponseEntity} contenant le HTML rendu ou une erreur transformée
      *
      * <p><b>URL :</b> <code>/rss25SB/resume/html</code></p>
      * <p><b>Méthode :</b> GET</p>
      * <p><b>Produit :</b> text/html</p>
      */
     @GetMapping(value = "/html", produces = MediaType.TEXT_HTML_VALUE)
-    public ResponseEntity<String> getItemsAsHTML() {
-        // Récupération des articles résumés
-        List<ItemSummaryDTO> items = itemService.getAllItemSummaries();
+    public ResponseEntity<String> getItemsAsHTML() throws JAXBException {
+        log.debug("GET /rss25SB/resume/html appelé");
 
-        // Rendu du HTML avec insertion des données dans le template "items"
-        String html = htmlRenderer.render(
-            "items",
-            Map.of("items", items)
-        );
+        try {
+            // Récupère la liste synthétique des articles
+            ItemSummaryListDTO dto = new ItemSummaryListDTO(itemService.getAllItemSummaries());
 
-        return ResponseEntity.ok(html);
+            // Transforme la liste en HTML via XSLT
+            String html = XsltTransformer.marshalAndTransform(dto, XsltFilePath.LIST.getPath());
+            return ResponseEntity.ok(html);
+        } catch (Exception e) {
+            log.error("Erreur XSLT liste résumée : {}", e.getMessage());
+
+            // Prépare une réponse d’erreur en XML, puis transforme en HTML
+            String messageErreur = "Erreur lors de la récupération de la liste résumée";
+            XmlErrorResponseDTO error = new XmlErrorResponseDTO(null, messageErreur);
+
+            try {
+                String html = XsltTransformer.marshalAndTransform(error, XsltFilePath.ERROR.getPath());
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(html);
+            } catch (Exception ex) {
+                // Erreur critique secondaire (par exemple : problème avec le XSLT d'erreur lui-même)
+                log.error("Erreur critique lors de la transformation XSLT d’erreur : {}", ex.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("<html><body><p>Erreur interne : " + ex.getMessage() + "</p></body></html>");
+            }
+        }
     }
 
     /**
      * Endpoint GET permettant d’obtenir un article complet au format XML selon son identifiant.
      * <p>
-     * Si l’article est trouvé, un objet {@link Item} est retourné (sérialisé en XML).
-     * Sinon, une réponse XML de type {@link XmlErrorResponseDTO} est générée avec l’ID et un statut "ERROR".
+     * Si l’article est trouvé, il est retourné sous forme XML.
+     * Sinon, un {@link XmlErrorResponseDTO} est retourné avec un statut "ERROR".
      * </p>
      *
      * @param id identifiant de l’article à rechercher
-     * @return {@link ResponseEntity} contenant l’article au format XML ou une erreur
-     * @throws JAXBException en cas d’erreur lors de la sérialisation XML
+     * @return {@link ResponseEntity} contenant l’article ou une erreur au format XML
+     * @throws JAXBException en cas de problème lors de la sérialisation
      *
      * <p><b>URL :</b> <code>/rss25SB/resume/xml/{id}</code></p>
      * <p><b>Méthode :</b> GET</p>
@@ -108,22 +126,24 @@ public class ResumeController {
      */
     @GetMapping(value = "/xml/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> getItemByIdAsXML(@PathVariable Long id) throws JAXBException {
+        log.debug("GET /rss25SB/resume/xml/{} appelé", id);
+
+        // Recherche l’article par son identifiant
         Optional<Item> itemOptional = itemService.getItemAsXmlById(id);
 
-        Object toMarshal;
-        HttpStatus status;
-
         if (itemOptional.isPresent()) {
-            toMarshal = itemOptional.get();
-            status = HttpStatus.OK;
+            // Article trouvé : sérialisation en XML
+            String xml = XmlUtil.marshal(itemOptional.get());
+            return ResponseEntity.ok(xml);
         } else {
-            String messageErreur = "Erreur lors de la récupération d’un flux rss25SB:\n" +
+            // Article introuvable : retourne un message d’erreur XML
+            String messageErreur = "Erreur lors de la récupération d’un flux rss25SB :\n" +
                                    "L'article avec l'identifiant: " + id + " n'existe pas.";
-            toMarshal = new XmlErrorResponseDTO(id, messageErreur);
-            status = HttpStatus.NOT_FOUND;
-        }
+            log.warn(messageErreur);
 
-        String xml = XmlUtil.marshal(toMarshal);
-        return ResponseEntity.status(status).body(xml);
+            XmlErrorResponseDTO error = new XmlErrorResponseDTO(id, messageErreur);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                 .body(XmlUtil.marshal(error));
+        }
     }
 }

@@ -169,7 +169,7 @@ public class ItemMapper {
         ImageEntity entity = new ImageEntity();
         entity.setType(image.getType());
         entity.setHref(image.getHref());
-        entity.setAlt(image.getAlt());
+        entity.setAlt(StringUtil.truncate(image.getAlt(), 255));
         entity.setLength(image.getLength());
         return entity;
     }

@@ -2,10 +2,12 @@ package fr.univrouen.rss25SB.controllers;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.*;
 
 import fr.univrouen.rss25SB.model.ProjectInfo;
 import fr.univrouen.rss25SB.service.ProjectInfoService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Contrôleur responsable de la page d'accueil du projet RSS25SB.
@@ -17,19 +19,12 @@ import fr.univrouen.rss25SB.service.ProjectInfoService;
  * @version 1.0
  */
 @Controller
+@RequiredArgsConstructor
+@Slf4j
 public class IndexController {
 
     /** Service injecté pour fournir les informations du projet. */
     private final ProjectInfoService projectInfoService;
-
-    /**
-     * Constructeur du contrôleur avec injection du service {@link ProjectInfoService}.
-     * 
-     * @param projectInfoService le service contenant les données du projet
-     */
-    public IndexController(ProjectInfoService projectInfoService) {
-        this.projectInfoService = projectInfoService;
-    }
 
     /**
      * Gère les requêtes HTTP GET vers la racine du site ("/").
@@ -39,6 +34,7 @@ public class IndexController {
      */
     @GetMapping("/")
     public String index(Model model) {
+        log.debug("GET / (index) appelé");
         ProjectInfo projectInfo = projectInfoService.getProjectInfo();
         model.addAttribute("project", projectInfo);
         return "index";

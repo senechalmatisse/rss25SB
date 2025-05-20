@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      th:replace="~{layout :: layout(~{::title}, ~{::section})}">
+
+<!-- Template Thymeleaf pour le formulaire d’upload de fichier XML. -->
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload XML</title>
+</head>
+
+<!--  Bloc <section> qui sera inséré dynamiquement dans le layout principal. -->
+<section>
+    <h2>Uploader un fichier XML</h2>
+
+    <!-- 
+      Formulaire d’upload de fichier.
+      - action="/rss25SB/insert/html" : endpoint qui traitera le fichier en POST
+      - method="post" : méthode HTTP POST
+      - enctype="multipart/form-data" : permet l’envoi de fichiers
+    -->
+    <form action="/rss25SB/insert/html" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <!-- Champ pour sélectionner un fichier XML -->
+            <label for="file">Fichier XML :</label><br />
+            <input type="file" id="file" name="file" accept=".xml" required /><br /><br />
+        </div>
+
+        <div class="form-group">
+            <!-- Bouton de validation du formulaire -->
+            <button type="submit" class="btn-primary">Valider</button>
+        </div>
+    </form>
+</section>
+</html>

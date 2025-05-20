@@ -4,6 +4,7 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Component;
 
@@ -19,6 +20,7 @@ import java.util.Map;
  * @author Matisse SENECHAL
  * @version 1.0
  */
+@Slf4j
 @AllArgsConstructor
 @Component
 public class HtmlRenderer {
@@ -35,10 +37,16 @@ public class HtmlRenderer {
      */
     public String render(String templateName, Map<String, Object> variables) {
         // Création du contexte Thymeleaf et injection des variables
+        log.debug("Rendu HTML pour template '{}', {} variables fournies",
+                  templateName, variables.size());
+
         Context context = new Context();
         context.setVariables(variables);
 
         // Traitement du template et retour du HTML rendu
-        return templateEngine.process(templateName, context);
+        String html = templateEngine.process(templateName, context);
+        log.debug("Rendu HTML terminé ({} octets)", html.length());
+
+        return html;
     }
 }

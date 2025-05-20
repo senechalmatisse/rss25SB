@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="fr" xmlns:th="http://www.thymeleaf.org"
       th:fragment="layout(title, content)">
+
+    <!-- Template de layout principal (modèle de page). -->
+
     <head>
         <meta charset="UTF-8">
         <title th:replace="${title}">Titre par défaut</title>
@@ -9,12 +12,18 @@
         <link rel="stylesheet" href="/css/style.css" />
     </head>
     <body>
+        <!-- En-tête statique commun à toutes les pages -->
         <header>
             <h1>Projet RSS25SB</h1>
         </header>
 
+        <!-- 
+          Contenu principal : remplacé par le fragment ${content} injecté
+          par la page spécifique (ex : formulaire d’upload).
+          Si aucun contenu n’est injecté, "Contenu par défaut" s’affichera.
+        -->
         <main>
-            <div th:replace="${content}">Contenu par défaut</div>
+            <div class="container" th:replace="${content}">Contenu par défaut</div>
         </main>
     </body>
 </html>

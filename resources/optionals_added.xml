@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<p:feed xmlns:p="http://univ.fr/rss25"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://univ.fr/rss25 rss25.xsd"
+        lang="fr" version="25">
+  <p:title>Flux RSS Complet</p:title>
+  <p:pubDate>2025-05-19T10:00:00+02:00</p:pubDate>
+  <p:copyright>Universite de Rouen</p:copyright>
+  
+  <p:link rel="self" type="application/xml" href="http://example.com/rss25.xml"/>
+  <p:link rel="alternate" type="text/html" href="http://example.com/page"/>
+
+  <p:item>
+    <p:guid>https://example.com/123e4567-e89b-12d3-a456-426614174000</p:guid>
+    <p:title>Article Complet</p:title>
+    <p:category term="actu"/>
+    <p:category term="tech"/>
+    <p:published>2025-05-18T12:00:00+02:00</p:published>
+    <p:image type="image/PNG" href="http://example.com/image.png" alt="Illustration" length="5000"/>
+    <p:content type="html" src="http://example.com/article.html"/>
+    <p:author name="Jean Dupont" email="jean@example.com" uri="http://example.com/jean"/>
+    <p:contributor name="Claire Martin" email="claire@example.com" uri="http://example.com/claire"/>
+  </p:item>
+
+  <p:item>
+    <p:guid>https://example.com/223e4567-e89b-12d3-a456-426614174001</p:guid>
+    <p:title>Article 2</p:title>
+    <p:category term="culture"/>
+    <p:updated>2025-05-19T08:00:00+02:00</p:updated>
+    <p:image type="image/PNG" href="http://example.com/image.png" alt="Illustration" length="5000"/>
+    <p:content type="text" src="test"/>
+    <p:author name="John Doe" email="john@example.com" uri="http://example.com/john"/>
+    <p:author name="Jane Doe" email="jane@example.com" uri="http://example.com/jane"/>
+    <p:contributor name="Claire Martin" email="claire@example.com" uri="http://example.com/claire"/>
+    <p:contributor name="Martin Claire" email="martin@example.com" uri="http://example.com/martin"/>
+  </p:item>
+</p:feed>

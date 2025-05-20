@@ -5,6 +5,8 @@ import fr.univrouen.rss25SB.service.ItemService;
 import fr.univrouen.rss25SB.utils.XmlUtil;
 import jakarta.xml.bind.*;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,7 @@ import org.springframework.web.bind.annotation.*;
  * @see XmlUtil
  */
 @RestController
+@Slf4j
 @RequestMapping("/rss25SB")
 @RequiredArgsConstructor
 public class DeleteController {
@@ -65,19 +68,21 @@ public class DeleteController {
      */
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_XML_VALUE)
     public ResponseEntity<String> deleteItem(@PathVariable Long id) throws JAXBException {
+        log.debug("DELETE /rss25SB/delete/{} appelé", id);
         String messageErreur = "Erreur lors de la suppression d’un flux rss25SB:\n";
 
         try {
             boolean deleted = itemService.deleteItemById(id);
-
             Object response;
             HttpStatus status;
 
             if (deleted) {
+                log.debug("Article {} supprimé avec succès", id);
                 response = new DeleteResponseDTO(id);
                 status = HttpStatus.OK;
             } else {
                 messageErreur += "L'article avec l'identifiant: " + id + " n'a pas était trouvé ou a déjà été supprimé.";
+                log.warn("Suppression échouée : {}", messageErreur);
                 response = new XmlErrorResponseDTO(id, messageErreur);
                 status = HttpStatus.NOT_FOUND;
             }
@@ -85,14 +90,12 @@ public class DeleteController {
             String xml = XmlUtil.marshal(response);
             return ResponseEntity.status(status).body(xml);
         } catch (JAXBException e) {
+            log.error("JAXBException lors de la suppression de {} : {}", id, e.getMessage());
             // Sérialisation manuelle minimale en cas de panne JAXB
             messageErreur += "Erreur interne du serveur lors de la sérialisation de la réponse.";
-            String fallback = "<error><id>" + id + "</id><status>ERROR</status>" +
-                              "<description>" + messageErreur + "</description>" +
-                              "</error>";
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(fallback);
+            String fallback = "<error><id>" + id + "</id><status>ERROR</status>"
+                            + "<description>" + messageErreur + "</description></error>";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(fallback);
         }
     }
 }
