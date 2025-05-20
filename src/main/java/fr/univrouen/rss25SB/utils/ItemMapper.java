@@ -73,8 +73,8 @@ public class ItemMapper {
      */
     public static ItemEntity toEntity(Item item) {
         ItemEntity entity = new ItemEntity();
-        entity.setGuid(item.getGuid());
-        entity.setTitle(item.getTitle());
+        entity.setGuid(StringUtil.truncate(item.getGuid(), 255));
+        entity.setTitle(StringUtil.truncate(item.getTitle(), 255));
 
         // Gestion des dates : au moins une des deux est obligatoire
         if (item.getPublished() != null) {
@@ -139,8 +139,8 @@ public class ItemMapper {
      */
     private static ContentEntity toEntityContent(Content content) {
         ContentEntity entity = new ContentEntity();
-        entity.setType(content.getType());
-        entity.setSrc(content.getSrc());
+        entity.setType(StringUtil.truncate(content.getType(), 255));
+        entity.setSrc(StringUtil.truncate(content.getSrc(), 255));
         return entity;
     }
 

@@ -38,7 +38,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/rss25SB")
 public class ItemController {
 
-    /** Service métier permettant d'accéder aux articles résumés stockés en base. */
+    /** Service métier permettant d'accéder aux articles stockés en base. */
     private final ItemService itemService;
 
     /** Moteur de rendu HTML (basé sur Thymeleaf) pour afficher les vues HTML. */
