@@ -11,18 +11,18 @@
 
 ## 📚 Table of Contents
 
-- [📘 Introduction](#📘-introduction)
-- [✨ Features](#✨-features)
-- [🏗️ Architecture](#🏗️-architecture)
-  - [📂 Package Structure](#📂-package-structure)
-- [🌐 REST API Endpoints](#🌐-rest-api-endpoints)
-- [🖥️ Client Applications](#🖥️-client-applications)
-- [🚀 Getting Started](#🚀-getting-started)
-  - [✅ Prerequisites](#✅-prerequisites)
-  - [⚙️ Configuration](#⚙️-configuration)
-  - [▶️ Running Locally](#▶️-running-locally)
-- [📫 Postman Collection](#📫-postman-collection)
-- [👨‍💻 Author](#👨‍💻-author)
+- [📘 Introduction](#-introduction)
+- [✨ Features](#-features)
+- [🏗️ Architecture](#-architecture)
+  - [📂 Package Structure](#-package-structure)
+- [🌐 REST API Endpoints](#-rest-api-endpoints)
+- [🖥️ Client Applications](#%EF%B8%8F-client-applications)
+- [🚀 Getting Started](#-getting-started)
+  - [✅ Prerequisites](#-prerequisites)
+  - [⚙️ Configuration](#%EF%B8%8F-configuration)
+  - [▶️ Running Locally](#%EF%B8%8F-running-locally)
+- [📫 Postman Collection](#-postman-collection)
+- [👨‍💻 Author](#-author)
 
 ---
 
